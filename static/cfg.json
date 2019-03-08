@@ -1,0 +1,44 @@
+{
+  "head": {
+    "/home": {
+      "msg": "",
+      "right": true
+    },
+    "/city": {
+      "msg": "city",
+      "left": true,
+      "right": true
+    },
+    "/index": {
+      "msg": "index",
+      "left": false,
+      "right": true
+    },
+    "/food": {
+      "msg": "index",
+      "left": true
+    },
+    "/search": {
+      "msg": "food",
+      "left": false,
+      "right": true
+    },
+    "/order": {
+      "msg": "order",
+      "left": false,
+      "right": true
+    },
+    "/user": {
+      "msg": "user",
+      "left": false,
+      "right": true
+    }
+  },
+  "foot": {
+    "/home": false,
+    "/index": true,
+    "/search": true,
+    "/order": true,
+    "/user": true
+  }
+}
