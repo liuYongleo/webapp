@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <loading v-if="loading"></loading>
     <ul>
       <li class="need-padding">
         <span class="fl">当前定位城市：</span>
@@ -13,7 +14,7 @@
     <ul class="hot">
       <li class="need-padding">热门城市</li>
       <li>
-        <router-link v-for="(item,key) in cityHot" :key="'hot-'+key" :to="'/city?'">
+        <router-link v-for="(item,key) in cityHot" :key="'hot-'+key" :to="'/city?rTitle=1&title='+item.name">
           {{item.name}}
         </router-link>
       </li>
@@ -25,7 +26,7 @@
           <span v-if="key == 0" class="light-color">(按字母排序)</span>
         </div>
         <div>
-          <router-link v-for="(i,k) in item" :key="'gc'+k" :to="'/city?'">
+          <router-link v-for="(i,k) in item" :key="'gc'+k" :to="'/city?rTitle=1&title='+i.name">
             {{i.name}}
           </router-link>
         </div>
@@ -45,12 +46,17 @@ for(let i in cityGroup){
   cityGroupArr[ascii - AASCII] = cityGroup[i]; 
 }
 
+import loading from '../../components/loading';
 export default {
+  components: {
+    loading
+  },
   data (){
     return {
       cityGroupArr,
       cityHot,
       cityGuess,
+      loading: true
     }
   },
   filters: {
@@ -66,7 +72,14 @@ export default {
         query: { city }
       })
     }
-  }
+  },
+  mounted() {
+    this.timeout = setTimeout(() => {
+      this.loading = false;
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    },800)
+  },
 }
 </script>
 
@@ -103,8 +116,8 @@ export default {
     }
     a{
       box-sizing: border-box;
-      float: left;
       display: inline-block;
+      float: left;
       width: 25%;
       line-height: 36px;
       border-right: 1px solid $borderColor;

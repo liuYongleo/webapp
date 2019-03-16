@@ -7,7 +7,9 @@ import Index from '../pages/index/index'
 import Food from '../pages/food/food'
 import Shop from '../pages/shop/shop'
 import ShopDetail from '../pages/shop/components/detail'
+import GoodsDetail from '../pages/shop/components/goodsDetail'
 import ShopDetailSafe from '../pages/shop/components/safe'
+import ShopOrder from '../pages/shop/components/ShopOrder'
 import Search from '../pages/search/search'
 import Order from '../pages/order/order'
 import User from '../pages/user/user'
@@ -51,17 +53,7 @@ export default new Router({
     },
     {
       path: '/index',
-      component: Index,
-      children: [
-        {
-          path: 'ha',
-          component: City,
-        },
-        {
-          path: 'hb',
-          component: City,
-        },
-      ]
+      component: Index
     },
     {
       path: '/food',
@@ -80,6 +72,14 @@ export default new Router({
               component: ShopDetailSafe
             }
           ]
+        },
+        {
+          path: 'goodsDetail',
+          component: GoodsDetail
+        },
+        {
+          path: 'shopOrder',
+          component: ShopOrder
         }
       ]
     },

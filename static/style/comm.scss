@@ -10,7 +10,13 @@ ul,li,dd,dt{
 }
 a,a:hover,a:active,a:visited{
   text-decoration: none;
+  color: white;
 }
 h1,h2,h3,h4,h5,h6{
   font-weight: normal;
+}
+button,input{
+  outline: none;
+  border: none;
+  background-color: transparent;
 }

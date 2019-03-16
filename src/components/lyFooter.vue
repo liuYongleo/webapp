@@ -1,20 +1,20 @@
 <template>
   <div class="container">
-    <router-link class="link" :to="'/index?headMsg='+headMsg">
-      <span>icon</span>
-      <span>index</span>
+    <router-link class="link" :class="{active:footer==1}" :to="'/index?headMsg='+headMsg">
+      <span class="iconfont icon-Shop"></span>
+      <span>商城</span>
     </router-link>
-    <router-link class="link" to="/search">
-      <span>icon1</span>
-      <span>search</span>
+    <router-link class="link" :class="{active:footer==2}" to="/search">
+      <span class="iconfont icon-custom-search"></span>
+      <span>搜索</span>
     </router-link>
-    <router-link class="link" to="/order">
-      <span>icon2</span>
-      <span>order</span>
+    <router-link class="link" :class="{active:footer==3}" to="/order">
+      <span class="iconfont icon-ordersearch"></span>
+      <span>订单</span>
     </router-link>
-    <router-link class="link" to="/user">
-      <span>icon3</span>
-      <span>user</span>
+    <router-link class="link" :class="{active:footer==4}" to="/user">
+      <span class="iconfont icon-user-msg"></span>
+      <span>我的</span>
     </router-link>
   </div>
 </template>
@@ -25,10 +25,10 @@ import {
 } from 'vuex';
 
 export default {
-  props: ['msg', 'left', 'right'],
+  props: ['msg', 'left', 'right', 'footer'],
   data () {
     return {
-
+      
     }
   }, 
   computed: mapState(['headMsg']),
@@ -42,6 +42,7 @@ export default {
   @import '../../static/style/variable';
   .container{
     position: fixed;
+    z-index: 100;
     left: 0;
     bottom: 0;
     width: 100%;
@@ -61,7 +62,7 @@ export default {
       &>span{
         line-height: 14px;
       }
-      &:hover, &:active{
+      &:hover, &:active, &.active{
         color: $mainBgColor*1.1;
       }
     }

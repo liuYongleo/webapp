@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <loading v-if="loading"></loading>
     <header>
       <img class="bg-img" :src="shop.image_path" alt="">
       <div class="back" @click="$router.go(-1)">&lt;</div>
@@ -44,7 +45,7 @@
             <li v-for="(item,k) in menu" :key="'mr-'+k">
               <h2><i class="big-font">{{item.name}}</i><i>{{item.description}}</i></h2>
               <div v-for="(i,f) in item.foods" :key="'f'+f">
-                <img src="../../../static/img/shop.png" alt="">
+                <img src="../../../static/img/shop.png" @click="setFoodCfg(i)">
                 <div>
                   <h3>{{i.name}}</h3>
                   <p>{{i.description}}</p>
@@ -52,7 +53,7 @@
                   <h5 v-if="i.activity"><i>{{i.activity.image_text}}</i></h5>
                   <h6>
                     <i>￥{{i.specfoods[0].price}}</i>
-                    <count :num="shopRecord[shopId] ? shopRecord[shopId][item.id] ? shopRecord[shopId][item.id][i.item_id] ? shopRecord[shopId][item.id][i.item_id] : 0 : 0 : 0" @minuse="minuse" @plus="plus" @operateplus="operteShop(item, i, 1)" @operateminuse="operteShop(item, i, -1)"></count>
+                    <count :num="shopRecord[shopId] ? shopRecord[shopId][item.id] ? shopRecord[shopId][item.id][i.item_id] ? shopRecord[shopId][item.id][i.item_id] : 0 : 0 : 0" @minuse="minuse" @plus="plus" @operateplus="operateShop(item, i, 1)" @operateminuse="operteShop(item, i, -1)"></count>
                   </h6>
                 </div>
               </div>
@@ -72,7 +73,7 @@
             </div>
             <div class="footer-right">
               <span v-if="!count">还差￥{{shop.float_minimum_order_amount-count}}起送</span>
-              <span v-else>去结算</span>
+              <span v-else @click="goOrder">去结算</span>
             </div>
           </footer>
         </transition>
@@ -121,6 +122,7 @@
     <router-view class="children"></router-view>
     <detail v-show="detail" @hide="toggleDetail" :item="shop"></detail>
     <activity v-show="activity" @hide="toggleActivity" :item="shop"></activity>
+    <goods-detail v-show="goodsDetail" @hide="toggleGoodsDetail" :item="foodCfg"></goods-detail>
   </div>
 </template>
 
@@ -133,9 +135,11 @@
   import BetterScroll from 'better-scroll';
   import count from './components/count';
   import detail from './components/detail';
+  import goodsDetail from './components/goodsDetail';
   import activity from './components/activity';
   import star from '../../components/star';
   
+  import loading from '../../components/loading';
   const shop = require('../../../static/server/shop.json');
   const ratings = require('../../../static/server/shop.ratings.json');
   const scores = require('../../../static/server/shop.scores.json');
@@ -147,10 +151,13 @@
       count,
       activity,
       detail,
-      star
+      star,
+      goodsDetail,
+      loading
     },
     data() {
       return {
+        loading: true,
         ratings,
         scores,
         tags,
@@ -162,6 +169,8 @@
         count: 0,
         activity: false,
         detail: false,
+        goodsDetail: false,
+        foodCfg: {},
         dots: [],
         shopMoney: 0
       }
@@ -218,7 +227,7 @@
         this.eventY = pos.y;
         this.dots.push(true);
       },
-      operteShop(item, i, num) {
+      operateShop(item, i, num) {
         let shopId = this.shopId, // shopId 商铺id
           itemId = item.id, // item.id 商铺内商品类别id
           iItemId = i.item_id, // i.item_id 商铺内商品类别下商品id
@@ -247,6 +256,13 @@
       toggleActivity() {
         this.activity = !this.activity;
       },
+      toggleGoodsDetail() {
+        this.goodsDetail = !this.goodsDetail;
+      },
+      setFoodCfg(item) {
+        this.foodCfg = item;
+        this.toggleGoodsDetail();
+      },
       afterEnter(el) {
         var obj = this.$refs['buy-cart'].getBoundingClientRect(),
           x = obj.x + 15,
@@ -272,8 +288,16 @@
         for (let item in obj) {
           num += obj[item];
         }
-        this['menu'+id] = num;
+        this['menu' + id] = num;
         return num;
+      },
+      goOrder(){
+        this.$router.push({
+          path: '/shop/shopOrder',
+          query: {
+            shopId: this.shopId
+          }
+        })
       }
     },
     filters: {
@@ -297,6 +321,11 @@
       this.shopId = this.$route.query.id;
     },
     mounted() {
+      this.timeout = setTimeout(() => {
+        this.loading = false;
+        clearTimeout(this.timeout);
+        this.timeout = null;
+      }, 800)
       this.$nextTick(() => {
         this.count = 0;
         let shopRecord = this.shopRecord[this.shopId];
@@ -559,7 +588,7 @@
     }
     footer {
       position: absolute;
-      z-index: 1;
+      z-index: 20;
       display: flex;
       align-items: stretch;
       bottom: 0;

@@ -6,6 +6,7 @@
       :msg='headMsg' 
       :left='headLeft' 
       :right='headRight'
+      :rtitle='rTitle'
       >
       </ly-header>
     </transition>
@@ -15,7 +16,7 @@
     </transition>
   
     <transition name="none">
-      <ly-footer v-show="footShow">
+      <ly-footer v-show="footShow" :footer="footerKey">
       </ly-footer>
     </transition>
   </div>
@@ -40,7 +41,7 @@
       lyFooter
     },
     mounted: function() {
-      // console.log(this.$route.meta);
+
     },
     methods: {
       
@@ -69,8 +70,18 @@
           return false;
         } 
       },
+      rTitle (){
+        if(this.$route.query.rTitle){
+          return '切换城市';
+        }else{
+          return false;
+        } 
+      },
       footShow (){
         return hfCfg.foot[this.$route.path] ? true : false;
+      },
+      footerKey (){
+        return hfCfg.foot[this.$route.path];
       },
     }
   }

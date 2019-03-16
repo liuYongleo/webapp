@@ -2,15 +2,18 @@
   <div class="container">
     <span @click="goBack" v-if="left" class="active left">&lt; 返回</span>
     <h1 @click="goCity">{{msg}}</h1>
-    <span class="right" v-if="right">
+    <span class="right" v-if="rtitle">
+        <i @click="goBack">{{rtitle}}</i>  
+    </span>
+    <span class="right" v-else-if="right">
         <i @click="goLog">登录</i>|<i @click="goReg">注册</i>  
-      </span>
+    </span>
   </div>
 </template>
 
 <script>
   export default {
-    props: ['msg', 'left', 'right'],
+    props: ['msg', 'left', 'right', 'rtitle'],
     data() {
       return {
   

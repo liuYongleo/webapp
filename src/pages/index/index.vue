@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <loading v-if="loading"></loading>
     <div class="swiper-container">
       <div class="swiper-wrapper">
         <div v-for="(item,key) in carousel" :key="'s-'+key" class="swiper-slide">
@@ -24,18 +25,26 @@
   const carousel = require('../../../static/server/carousel.json')
   const restaurants = require('../../../static/server/restaurants.json')
   
+  import loading from '../../components/loading';
   
   export default {
     data() {
       return {
         carousel: [carousel.slice(0, 8), carousel.slice(8, 16)],
-        restaurants
+        restaurants,
+        loading: true
       }
     },
     components: {
-      foodlist: foodlist
+      foodlist: foodlist,
+      loading
     },
     mounted() {
+      this.timeout = setTimeout(() => {
+        this.loading = false;
+        clearTimeout(this.timeout);
+        this.timeout = null;
+      }, 800)
       new Swiper('.swiper-container', {
         loop: true,
         pagination: {

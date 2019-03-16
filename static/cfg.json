@@ -4,41 +4,45 @@
       "msg": "",
       "right": true
     },
+    "/login": {
+      "left": true,
+      "msg": "密码登录"
+    },
+    "/register": {
+      "left": true,
+      "msg": "重置密码"
+    },
     "/city": {
       "msg": "city",
       "left": true,
       "right": true
     },
     "/index": {
-      "msg": "index",
       "left": false,
       "right": true
     },
     "/food": {
-      "msg": "index",
       "left": true
     },
     "/search": {
-      "msg": "food",
-      "left": false,
-      "right": true
+      "msg": "搜索"
     },
     "/order": {
-      "msg": "order",
+      "msg": "订单",
       "left": false,
       "right": true
     },
     "/user": {
-      "msg": "user",
-      "left": false,
-      "right": true
+      "msg": "我的",
+      "left": true,
+      "right": false
     }
   },
   "foot": {
     "/home": false,
-    "/index": true,
-    "/search": true,
-    "/order": true,
-    "/user": true
+    "/index": 1,
+    "/search": 2,
+    "/order": 3,
+    "/user": 4
   }
 }

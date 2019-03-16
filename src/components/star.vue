@@ -36,7 +36,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .star{
     display: inline-block;
     margin-right: 4px;
