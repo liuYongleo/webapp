@@ -61,7 +61,10 @@
         });
         // this.safe = !this.safe;
       }
-    }
+    },
+    mounted() {
+      console.log('detail mounted');
+    },
   }
 </script>
 
@@ -143,15 +146,6 @@
           }
         }
       }
-    }
-    .slide-enter-active,
-    .slide-leave-active {
-      transition: all .3s linear;
-    }
-    .slide-enter,
-    .slide-leave-active {
-      transform: translate(30%, 0);
-      opacity: 0;
     }
   }
 </style>

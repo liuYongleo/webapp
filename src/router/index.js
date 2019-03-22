@@ -10,6 +10,10 @@ import ShopDetail from '../pages/shop/components/detail'
 import GoodsDetail from '../pages/shop/components/goodsDetail'
 import ShopDetailSafe from '../pages/shop/components/safe'
 import ShopOrder from '../pages/shop/components/ShopOrder'
+import ShopOrderRemark from '../pages/shop/components/remark'
+import ShopOrderInvoice from '../pages/shop/components/invoice'
+import ShopOrderAddress from '../pages/shop/components/address'
+import ShopOrderAddAddr from '../pages/shop/components/addAddress'
 import Search from '../pages/search/search'
 import Order from '../pages/order/order'
 import User from '../pages/user/user'
@@ -79,7 +83,27 @@ export default new Router({
         },
         {
           path: 'shopOrder',
-          component: ShopOrder
+          component: ShopOrder,
+          children: [
+            {
+              path: 'remark',
+              component: ShopOrderRemark
+            },
+            {
+              path: 'invoice',
+              component: ShopOrderInvoice
+            },
+            {
+              path: 'address',
+              component: ShopOrderAddress,
+              children: [
+                {
+                  path: 'add',
+                  component: ShopOrderAddAddr
+                }
+              ]
+            }
+          ]
         }
       ]
     },

@@ -15,7 +15,7 @@
     <div class="bottom-div">
       <p class="warn">温馨提示：未注册过的账号，登录时将自动注册</p>
       <p class="warn">注册过的用户可凭账户密码登录</p>
-      <button @click="setHeadMsg('txt')">登录</button>
+      <button @click="setHeadMsg('txt')" class="button-full">登录</button>
       <p class="tr"><span @click="reset">重置密码？</span></p>      
     </div>
 
@@ -71,15 +71,6 @@
     }
     .bottom-div{
       padding: 0 .4rem;
-      button{
-        line-height: 1.2rem;
-        width: 100%;
-        margin-bottom: .4rem;
-        font-size: 16px;
-        border-radius: 4px;
-        color: white;
-        background: #0167C8;
-      }
       p{
         line-height: .8rem;
         color: red;

@@ -21,7 +21,7 @@
       <input type="text" id="code" name="code">
     </div>
     <div class="bottom-div">
-      <button @click="goBack">确认</button>
+      <button @click="goBack" class="button-full">确认</button>
     </div>
 
   </div>
@@ -76,15 +76,6 @@
     }
     .bottom-div{
       padding: .8rem .4rem;
-      button{
-        line-height: 1.2rem;
-        width: 100%;
-        margin-bottom: .4rem;
-        font-size: 16px;
-        border-radius: 4px;
-        color: white;
-        background: #0167C8;
-      }
     }
   }
 </style>

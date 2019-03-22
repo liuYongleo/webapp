@@ -50,7 +50,10 @@
         this.$router.go(-1);
         // this.$emit('hide');
       }
-    }
+    },
+    mounted() {
+      console.log('safe mounted');
+    },
   }
 </script>
 

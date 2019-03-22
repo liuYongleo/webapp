@@ -7,51 +7,57 @@
         <li @click="selectNav(2)" :class="{active:navKey==2}">排序<span><i></i></span></li>
         <li @click="selectNav(3)" :class="{active:navKey==3}">筛选<span><i></i></span></li>
       </ul>
-      <div class="category slideInDown" v-show="navKey==1" :class="{animated:navKey==1}">
-        <ul class="left">
-          <li v-for="(item,key) in category" :key="'c-'+key" @click="selectCat(item.id)" :class="{active:categoryId==item.id}">
-            <p>
-              <img :src="item.image_url|imgSrc" alt="">
-              <i>{{item.name}}</i>
-            </p>
-            <p class="light-color">
-              <i class="left-count">{{item.count}}</i>
-              <i>></i>
-            </p>
-          </li>
-        </ul>
-        <ul class="right">
-          <li v-for="(item,key) in category" :key="'ra-'+key" v-if="item.id == categoryId">
-            <div v-for="(i,k) in item.sub_categories" :key="'ri-'+k" @click="selectCatChild(i.id)" :class="{active:categoryRight==i.id}">
-              <i>{{i.name}}</i>
-              <i>{{i.count}}</i>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div class="sort slideInDown" v-show="navKey==2" :class="{animated:navKey==2}">
-        <ul>
-          <li v-for="(item,key) in sortList" :key="'s-'+key" @click="selectSort(key)" :class="{active:sortKey==key}">{{item}}</li>
-        </ul>
-      </div>
-      <div class="filter slideInDown" v-show="navKey==3" :class="{animated:navKey==3}">
-        <h4>配送方式</h4>
-        <ul class="delivery-ul">
-          <li v-for="(item,key) in foodDelivery" :key="'fd-'+key" @click="selectDelivery(item.id)" :class="{active:deliveryId==item.id}">
-            <i>icon</i>{{item.text}}
-          </li>
-        </ul>
-        <h4>商家属性(可以多选)</h4>
-        <ul class="activity-ul">
-          <li v-for="(item,key) in foodActivity" :key="'fa-'+key" @click="selectActivity(item.id)" :class="{active:activityId[item.id]}">
-            <i :style="item.icon_color|str">{{item.icon_name}}</i>{{item.name}}
-          </li>
-        </ul>
-        <p>
-          <button @click="clearRecord">清空</button>
-          <button @click="sureBtn" class="sure">确定</button>
-        </p>
-      </div>
+      <transition name="sort-slide" mode="out-in">
+        <div class="category slideInDowns" v-show="navKey==1" :class="{animateds:navKey==1}">
+          <ul class="left">
+            <li v-for="(item,key) in category" :key="'c-'+key" @click="selectCat(item.id)" :class="{active:categoryId==item.id}">
+              <p>
+                <img :src="item.image_url|imgSrc" alt="">
+                <i>{{item.name}}</i>
+              </p>
+              <p class="light-color">
+                <i class="left-count">{{item.count}}</i>
+                <i>></i>
+              </p>
+            </li>
+          </ul>
+          <ul class="right">
+            <li v-for="(item,key) in category" :key="'ra-'+key" v-if="item.id == categoryId">
+              <div v-for="(i,k) in item.sub_categories" :key="'ri-'+k" @click="selectCatChild(i.id)" :class="{active:categoryRight==i.id}">
+                <i>{{i.name}}</i>
+                <i>{{i.count}}</i>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </transition>
+      <transition name="sort-slide" mode="out-in">
+        <div class="sort slideInDowns" v-show="navKey==2" :class="{animateds:navKey==2}">
+          <ul>
+            <li v-for="(item,key) in sortList" :key="'s-'+key" @click="selectSort(key)" :class="{active:sortKey==key}">{{item}}</li>
+          </ul>
+        </div>
+      </transition>
+      <transition name="sort-slide" mode="out-in">
+        <div class="filter slideInDowns" v-show="navKey==3" :class="{animateds:navKey==3}">
+          <h4>配送方式</h4>
+          <ul class="delivery-ul">
+            <li v-for="(item,key) in foodDelivery" :key="'fd-'+key" @click="selectDelivery(item.id)" :class="{active:deliveryId==item.id}">
+              <i>icon</i>{{item.text}}
+            </li>
+          </ul>
+          <h4>商家属性(可以多选)</h4>
+          <ul class="activity-ul">
+            <li v-for="(item,key) in foodActivity" :key="'fa-'+key" @click="selectActivity(item.id)" :class="{active:activityId[item.id]}">
+              <i :style="item.icon_color|str">{{item.icon_name}}</i>{{item.name}}
+            </li>
+          </ul>
+          <p>
+            <button @click="clearRecord">清空</button>
+            <button @click="sureBtn" class="sure">确定</button>
+          </p>
+        </div>
+      </transition>
     </nav>
     <div>
       <foodlist v-for="(item,key) in restaurants" :key="'ff-'+key" :item="item"></foodlist>
@@ -215,6 +221,9 @@
       }
       &>div {
         background: white;
+        position: absolute;
+        z-index: 3;
+        width: 100%;
       }
       .category {
         display: flex;
@@ -357,6 +366,17 @@
     }
     &>div {
       padding-top: 40px;
+    }
+    .sort-slide-enter-active,
+    .sort-slide-leave-active {
+      transition: all .5s linear;
+    }
+    .sort-slide-enter,
+    .sort-slide-leave-active {
+      transform: translateY(-100%);
+    }
+    .sort-slide-leave {
+      transition-duration: .28s;
     }
   }
 </style>

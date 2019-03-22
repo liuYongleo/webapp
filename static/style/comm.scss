@@ -15,8 +15,21 @@ a,a:hover,a:active,a:visited{
 h1,h2,h3,h4,h5,h6{
   font-weight: normal;
 }
-button,input{
+button,input,textarea{
   outline: none;
   border: none;
   background-color: transparent;
+}
+.button-full{
+  line-height: 1.2rem;
+  width: 100%;
+  margin-bottom: .4rem;
+  font-size: 16px;
+  border-radius: 4px;
+  color: white;
+  background: #0167C8;
+}
+.button-full:active{
+  background-color: #3084D4;
+  // transform: scale(.96);
 }

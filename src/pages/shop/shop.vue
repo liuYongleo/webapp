@@ -8,7 +8,7 @@
         <div class="flex">
           <div class="flex-left">
             <img :src="shop.image_path" alt="">
-            <div @click="toggleDetail">
+            <div @touchend.stop.prevent="toggleDetail">
               <h2>{{shop.name}}</h2>
               <p>商家配送 / 分钟送达 / {{shop.piecewise_agent_fee.tips}}</p>
               <p>公告：{{shop.promotion_info}}</p>
@@ -53,7 +53,7 @@
                   <h5 v-if="i.activity"><i>{{i.activity.image_text}}</i></h5>
                   <h6>
                     <i>￥{{i.specfoods[0].price}}</i>
-                    <count :num="shopRecord[shopId] ? shopRecord[shopId][item.id] ? shopRecord[shopId][item.id][i.item_id] ? shopRecord[shopId][item.id][i.item_id] : 0 : 0 : 0" @minuse="minuse" @plus="plus" @operateplus="operateShop(item, i, 1)" @operateminuse="operteShop(item, i, -1)"></count>
+                    <count :num="shopRecord[shopId] ? shopRecord[shopId][item.id] ? shopRecord[shopId][item.id][i.item_id] ? shopRecord[shopId][item.id][i.item_id]['num'] : 0 : 0 : 0" @minuse="minuse" @plus="plus" @operateplus="operateShop(item, i, 1)" @operateminuse="operateShop(item, i, -1)"></count>
                   </h6>
                 </div>
               </div>
@@ -63,7 +63,7 @@
         <transition name="fade">
           <footer :class="{active:count}" v-show="navKey==1">
             <div class="footer-left">
-              <div ref="buy-cart">
+              <div @click="togglePayPop" ref="buy-cart">
                 <i class="iconfont icon-gouwuche-tianchong"><em v-if="count">{{count}}</em></i>
               </div>
               <p>
@@ -73,7 +73,7 @@
             </div>
             <div class="footer-right">
               <span v-if="!count">还差￥{{shop.float_minimum_order_amount-count}}起送</span>
-              <span v-else @click="goOrder">去结算</span>
+              <span v-else="count" @click="goOrder">去结算</span>
             </div>
           </footer>
         </transition>
@@ -119,8 +119,29 @@
         </div>
       </section>
     </transition>
+    <transition name="fade">
+      <div v-show="popToggle" class="pop-window">
+        <div @click="togglePayPop" class="mask"></div>
+        <transition name="slide-up">
+          <div v-show="popToggle" class="pop-content">
+            <h3><span>购物车</span><span @click="clearOrder">清空</span></h3>
+            <ul>
+              <li v-for="(item,key) in orderList" :key="key">
+                <div v-for="(i,k) in item" :key="k" v-if="i.num">
+                  <span>{{i.name}}</span>
+                  <div>
+                    <span class="orange-color">￥ {{i.price}}</span>
+                    <count :num="i.num" @minuse="minuse" @plus="plus" @operateplus="operateShop(key, k, 1)" @operateminuse="operateShop(key, k, -1)"></count>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </transition>
+      </div>
+    </transition>
     <router-view class="children"></router-view>
-    <detail v-show="detail" @hide="toggleDetail" :item="shop"></detail>
+    <!-- <detail v-show="detail" @hide="toggleDetail" :item="shop"></detail> -->
     <activity v-show="activity" @hide="toggleActivity" :item="shop"></activity>
     <goods-detail v-show="goodsDetail" @hide="toggleGoodsDetail" :item="foodCfg"></goods-detail>
   </div>
@@ -172,12 +193,13 @@
         goodsDetail: false,
         foodCfg: {},
         dots: [],
-        shopMoney: 0
+        shopMoney: 0,
+        popToggle: false,
+        orderList: {}
       }
     },
     computed: {
       ...mapState(['shopRecord']),
-  
     },
     watch: {
       'count' () {
@@ -190,13 +212,15 @@
               for (let ikey in shopRecord[rkey]) {
                 for (let fkey in menu[mkey]['foods']) {
                   if (ikey == menu[mkey]['foods'][fkey]['item_id']) {
-                    total += shopRecord[rkey][ikey] * menu[mkey]['foods'][fkey]['specfoods'][0]['price'];
+                    total += shopRecord[rkey][ikey]['num'] * menu[mkey]['foods'][fkey]['specfoods'][0]['price'];
                   }
                 }
               }
             }
           }
         }
+        this.orderList = shopRecord;
+        // console.log(this.orderList);
         this.shopMoney = total;
       }
     },
@@ -228,26 +252,41 @@
         this.dots.push(true);
       },
       operateShop(item, i, num) {
+        // console.log(i);
         let shopId = this.shopId, // shopId 商铺id
-          itemId = item.id, // item.id 商铺内商品类别id
-          iItemId = i.item_id, // i.item_id 商铺内商品类别下商品id
+          itemId = typeof item == 'string' ? item : item.id, // item.id 商铺内商品类别id
+          iItemId = typeof i == 'string' ? i : i.item_id, // i.item_id 商铺内商品类别下商品id
           shop = this.shopRecord,
           goodsNum = 0;
-        if (shop[shopId] && shop[shopId][itemId]) {
-          goodsNum = shop[shopId][itemId][iItemId];
-          shop[shopId][itemId][iItemId] = parseInt(goodsNum ? goodsNum : 0) + num;
-        } else if (shop[shopId]) {
-          shop[shopId][itemId] = {};
-          shop[shopId][itemId][iItemId] = 1;
+        // console.log(shopId, itemId, iItemId);
+        // console.log(shop);
+        if (shop[shopId] && shop[shopId][itemId] && shop[shopId][itemId][iItemId] !== undefined) {
+          goodsNum = shop[shopId][itemId][iItemId].num;
+          shop[shopId][itemId][iItemId].num = parseInt(goodsNum ? goodsNum : 0) + num;
         } else {
-          shop[shopId] = {};
-          shop[shopId][itemId] = {};
-          shop[shopId][itemId][iItemId] = 1;
+          if (!shop[shopId]) {
+            shop[shopId] = {};
+            shop[shopId][itemId] = {};
+          } else if (!shop[shopId][itemId]) {
+            shop[shopId][itemId] = {};
+          }
+          shop[shopId][itemId][iItemId] = {
+            num: 1,
+            name: i.name,
+            price: i.specfoods[0]['price']
+          };
         }
         this.setShop(shop);
         // console.log(item, JSON.stringify(shop));
       },
+      clearOrder() {
+        shop[this.shopId] = {};
+        this.count = 0;
+        this.setShop(shop);
+        this.popToggle = false;
+      },
       toggleDetail() {
+        // console.log(this.detail);
         this.$router.push({
           path: '/shop/detail'
         })
@@ -286,18 +325,23 @@
           obj = shopRecord[shopId] ? shopRecord[shopId][id] ? shopRecord[shopId][id] : {} : {},
           num = 0;
         for (let item in obj) {
-          num += obj[item];
+          num += obj[item]['num'];
         }
         this['menu' + id] = num;
         return num;
       },
-      goOrder(){
+      goOrder() {
         this.$router.push({
           path: '/shop/shopOrder',
           query: {
-            shopId: this.shopId
+            shopId: this.shopId,
+            shopName: this.shop.name
           }
         })
+      },
+      togglePayPop() {
+        if (this.shopMoney - 5 < 0) return;
+        this.popToggle = !this.popToggle;
       }
     },
     filters: {
@@ -321,6 +365,9 @@
       this.shopId = this.$route.query.id;
     },
     mounted() {
+      // console.log(this.shopRecord[this.shopId]);
+      // console.log(menu);
+      // console.log();
       this.timeout = setTimeout(() => {
         this.loading = false;
         clearTimeout(this.timeout);
@@ -331,7 +378,7 @@
         let shopRecord = this.shopRecord[this.shopId];
         for (let item in shopRecord) {
           for (let i in shopRecord[item]) {
-            this.count += shopRecord[item][i];
+            this.count += shopRecord[item][i]['num'];
           }
         }
         let offsetArr = this.offsetArr = [],
@@ -342,6 +389,7 @@
             let height = childNodes[i].offsetHeight;
             offsetArr.push(i == 0 ? height : height + offsetArr[i - 1]);
           }
+          this.menuRight.refresh();
         });
         this.menuLeft = new BetterScroll('.wrapper-left', {
           scrollY: true,
@@ -775,7 +823,7 @@
     }
     .move-dot {
       position: fixed;
-      // z-index: 200;
+      z-index: 15;
       i {
         position: relative;
         top: 0;
@@ -798,6 +846,73 @@
     .fade-leave,
     .fade-leave-active {
       display: none;
+    }
+    .pop-window {
+      position: absolute;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      padding: 0;
+      margin: 0;
+      .mask {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, .2);
+      }
+      .pop-content {
+        display: flex;
+        flex-flow: column;
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        background-color: white;
+        padding: 0 0 46px 0;
+        margin: 0;
+        max-height: 60% !important;
+        h3 {
+          display: flex;
+          justify-content: space-between;
+          padding: 4px 12px;
+          line-height: 1rem;
+          flex-basis: 1rem;
+          flex-shrink: 0;
+          background-color: #f5f5f5;
+        }
+        ul {
+          overflow-y: scroll;
+        }
+        li>div {
+          display: flex;
+          justify-content: space-between;
+          position: relative;
+          padding: 12px;
+          font-size: 13px;
+          border-bottom: 1px solid #f5f5f5;
+          .orange-color {
+            position: absolute;
+            right: 118px;
+            color: #E57525;
+          }
+          &>div>div {
+            position: relative;
+            right: 0;
+            top: 0;
+          }
+        }
+      }
+    }
+    .slide-up-enter-active,
+    .slide-up-leave-active {
+      transition: all .3s linear;
+    }
+    .slide-up-enter,
+    .slide-up-leave-active {
+      transform: translateY(100%);
     }
   }
 </style>
